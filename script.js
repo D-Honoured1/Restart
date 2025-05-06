@@ -1,120 +1,118 @@
-// // Function to randomly generate the computer's choice
-// function getCompChoice() {
-//     const answer = ["Rock", "Paper", "Scissors"];
-//     let choice = answer[Math.floor(Math.random() * answer.length)].toUpperCase(); // Randomly pick one and convert to uppercase
-//     return choice;
-// }
+// Rock Paper Scissors Project
 
-// // Function to get the human player's choice via prompt with input validation
-// function getHumanChoice() {
-//     let choice = prompt("Rock, Paper or Scissors?").toUpperCase(); // Get user input and capitalize
-    
-//     // Loop until user enters a valid choice
-//     while (!["ROCK", "PAPER", "SCISSORS"].includes(choice)) {
-//         // Invalid choice, prompt again
-//         choice = prompt("Invalid input! Please enter Rock, Paper, or Scissors:").toUpperCase();
-//     }
+// Select buttons
+const rockBtn = document.querySelector("#rock");
+const paperBtn = document.querySelector("#paper");
+const scissorsBtn = document.querySelector("#scissors");
+const restartBtn = document.querySelector("#newGame");
 
-//     return choice;
-// }
+// Select display areas
+const playerChoiceDisplay = document.querySelector("#player-choice");
+const computerChoiceDisplay = document.querySelector("#computer-choice");
+const winnerDisplay = document.querySelector("#winner");
+const playerScoreDisplay = document.querySelector("#player-score");
+const computerScoreDisplay = document.querySelector("#computer-score");
 
+// Initialize game state
+let playerScore = 0;
+let computerScore = 0;
+let gameOver = false;
 
-// // Initialize the scores for the player and the computer
-// let playerScore = 0;
-// let computerScore = 0;
+// Add class for styling (optional)
+rockBtn.classList.add("play");
+paperBtn.classList.add("play");
+scissorsBtn.classList.add("play");
+restartBtn.classList.add("newGame");
 
-// // Function to play a single round of Rock, Paper, Scissors
-// function playRound(humanChoice, computerChoice) {
-//     // Case: Both choices are the same - draw
-//     if (humanChoice === computerChoice) {
-//         console.log('You chose ' + humanChoice + ' and Computer chose ' + computerChoice + '. Draw!');
-//     }
-//     // Case: Player loses
-//     else if (humanChoice === "ROCK" && computerChoice === "PAPER") {
-//         console.log("You lose! Paper beats Rock.");
-//         computerScore++;
-//     } else if (humanChoice === "PAPER" && computerChoice === "SCISSORS") {
-//         console.log("You lose! Scissors beats Paper.");
-//         computerScore++;
-//     } else if (humanChoice === "SCISSORS" && computerChoice === "ROCK") {
-//         console.log("You lose! Rock beats Scissors.");
-//         computerScore++;
-//     }
-//     // Case: Player wins (all other remaining valid combinations)
-//     else {
-//         console.log("You win! " + humanChoice + " beats " + computerChoice + ".");
-//         playerScore++;
-//     }
-//     // display score
-//     console.log(playerScore, computerScore)
-// }
+// Event listeners for play buttons
+rockBtn.addEventListener("click", () => handlePlayerChoice("ROCK"));
+paperBtn.addEventListener("click", () => handlePlayerChoice("PAPER"));
+scissorsBtn.addEventListener("click", () => handlePlayerChoice("SCISSORS"));
 
-// // Get the choices from human and computer
-// const humanSelection = getHumanChoice();
-// const computerSelection = getCompChoice();
+// Event listener for restart
+restartBtn.addEventListener("click", resetGame);
 
-// // Play one round with those selections
-// //playRound(humanSelection, computerSelection);
+// Handle player choice
+function handlePlayerChoice(playerChoice) {
+  if (gameOver) return;
 
-// // Show the current scores
-// // console.log("Player Score: " + playerScore);
-// // console.log("Computer Score: " + computerScore);
+  const computerChoice = getComputerChoice();
+  const result = playRound(playerChoice, computerChoice);
 
-// // Function to play the game until someone reaches 5 points
-// function playGame() {
-//     // Reset scores before starting
-//     playerScore = 0;
-//     computerScore = 0;
+  playerChoiceDisplay.textContent = `You chose: ${playerChoice}`;
+  computerChoiceDisplay.textContent = `Computer chose: ${computerChoice}`;
+  winnerDisplay.textContent = result;
 
-//     // Keep playing rounds until one score hits 5
-//     while (playerScore < 5 && computerScore < 5) {
-//         const humanSelection = getHumanChoice();
-//         const computerSelection = getCompChoice();
-//         playRound(humanSelection, computerSelection);
-//     }
+  updateScores(result);
+  checkGameOver();
+}
 
-//     // Declare final winner
-//     if (playerScore === 5) {
-//         console.log("🎉 Congratulations! You won the game!");
-//     } else {
-//         console.log("😞 The computer won the game. Better luck next time!");
-//     }
-// }
+// Get random computer choice
+function getComputerChoice() {
+  const options = ["ROCK", "PAPER", "SCISSORS"];
+  return options[Math.floor(Math.random() * options.length)];
+}
 
-// // Start the game
-// playGame();
+// Play a single round and return the result text
+function playRound(player, computer) {
+  if (player === computer) return "It's a draw!";
 
-// const container = document.querySelector("#container");
+  const win =
+    (player === "ROCK" && computer === "SCISSORS") ||
+    (player === "PAPER" && computer === "ROCK") ||
+    (player === "SCISSORS" && computer === "PAPER");
 
-// // Create the content div and set styles
-// const content = document.createElement("div");
-// content.setAttribute("style", "background-color: pink; border: 2px solid black;");
+  return win ? "You win!" : "You lose!";
+}
 
-// // Create the header (h1) and set its text content
-// const header = document.createElement("h1");
-// header.textContent = "I am a header";
+// Update score based on result
+function updateScores(result) {
+  if (result === "You win!") {
+    playerScore++;
+  } else if (result === "You lose!") {
+    computerScore++;
+  }
 
-// // Append the header to the content div
-// content.appendChild(header);
+  playerScoreDisplay.textContent = playerScore;
+  computerScoreDisplay.textContent = computerScore;
+}
 
-// // Create the paragraph and set its text content
-// const paragraph = document.createElement("p");
-// paragraph.textContent = "me too";
+// Check if someone reached 5 points
+function checkGameOver() {
+  if (playerScore === 5 || computerScore === 5) {
+    gameOver = true;
+    winnerDisplay.textContent = playerScore === 5
+      ? "🎉 You won the game!"
+      : "💻 Computer wins the game!";
+    disableButtons();
+  }
+}
 
-// // Append the paragraph to the content div
-// content.appendChild(paragraph);
+// Disable play buttons
+function disableButtons() {
+  rockBtn.disabled = true;
+  paperBtn.disabled = true;
+  scissorsBtn.disabled = true;
+}
 
-// // Finally, append the content div to the container
-// container.appendChild(content);
+// Enable play buttons
+function enableButtons() {
+  rockBtn.disabled = false;
+  paperBtn.disabled = false;
+  scissorsBtn.disabled = false;
+}
 
+// Reset everything
+function resetGame() {
+  playerScore = 0;
+  computerScore = 0;
+  gameOver = false;
 
-// buttons is a node list. It looks and acts much like an array.
-const buttons = document.querySelectorAll("button");
+  playerScoreDisplay.textContent = "0";
+  computerScoreDisplay.textContent = "0";
+  playerChoiceDisplay.textContent = "You chose: ";
+  computerChoiceDisplay.textContent = "Computer chose: ";
+  winnerDisplay.textContent = "";
 
-// we use the .forEach method to iterate through each button
-buttons.forEach((button) => {
-  // and for each one we add a 'click' listener
-  button.addEventListener("click", () => {
-    alert(button.id);
-  });
-});
+  enableButtons();
+}
